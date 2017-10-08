@@ -82,11 +82,11 @@ CREATE TABLE PARAMS
 CREATE TABLE PARAMS_CATHEGORY
 (
     CathegoryID number(10) NOT NULL,
-    ParamsID number(10) NOT NULL,
+    ParamsTypesID number(10) NOT NULL,
     CONSTRAINT FK_CathegoryParamsCathegory
         FOREIGN KEY (CathegoryID)
         REFERENCES CATHEGORY (ID),
     CONSTRAINT FK_ParamsTypesParamsCathegory
-        FOREIGN KEY (ParamsID)
-        REFERENCES PARAMS (ID)
+        FOREIGN KEY (ParamsTypesID)
+        REFERENCES PARAMS_TYPES (ID)
 );

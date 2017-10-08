@@ -18,39 +18,4 @@ INSERT INTO PARAMS_CATHEGORY (CATHEGORYID, PARAMSTYPESID) VALUES(1,2);
 INSERT INTO PARAMS_CATHEGORY (CATHEGORYID, PARAMSTYPESID) VALUES(1,3);
 INSERT INTO PARAMS_CATHEGORY (CATHEGORYID, PARAMSTYPESID) VALUES(1,4);
 
-
-CREATE TABLE IMAGE
-(
-    ID number(10) NOT NULL,
-    ProductID number(10) NOT NULL,
-    Name varchar2(200) NOT NULL,
-    Type varchar2(4) NOT NULL,
-    Image ORDimage,
-    CONSTRAINT Image_PK PRIMARY KEY (ID),
-    CONSTRAINT FK_ProductImage
-        FOREIGN KEY (ProductID)
-        REFERENCES PRODUCT (ID)
-);
-
-DECLARE
-    file bfile;
-    bl BLOB:=empty_blob();
-    fileSize number;
-    id number(10);
-BEGIN
-    file:=bfilename('IMAGES','SamsungGalaxyS8.jpg');
-    IF(dbms_lob.fileexists(file)=1) THEN
-        fileSize:=dbms_lob.getlength(file);
-        insert into IMAGE(PRODUCTID,NAME,TYPE,IMAGE) VALUES(1,'Samsung Galaxy S8','jpg',bl);
-        dbms_lob.open(file,dbms_lob.lob_readonly);
-        dbms_lob.open(bl,dbms_lob.lob_readwrite);
-        dbms_lob.loadfromfile(bl,file, fileSize);
-        dbms_lob.close(bl);
-        dbms_lob.close(file);
-        COMMIT;
-        dbms_output.put_line('plik znalazl siê w tabeli pod numerem '||id||', zajmuje '||fileSize||' bajtow');
-        ELSE 
-            dbms_output.put_line('nie znalazlem takiego pliku...');  
-        END IF;
-END;
 /

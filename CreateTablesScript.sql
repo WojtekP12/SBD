@@ -69,6 +69,7 @@ CREATE TABLE PARAMS
     ID number(10) NOT NULL,
     ProductID number(10) NOT NULL,
     ParamsTypesID number(10) NOT NULL,
+	ParamValue varchar2(200),
     CONSTRAINT Params_PK PRIMARY KEY (ID),
     CONSTRAINT FK_ParamsTypesParams
         FOREIGN KEY (ParamsTypesID)

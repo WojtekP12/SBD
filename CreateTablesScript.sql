@@ -36,7 +36,7 @@ CREATE TABLE IMAGE
     ProductID number(10) NOT NULL,
     Name varchar2(200) NOT NULL,
     Type varchar2(4) NOT NULL,
-    File bfile NOT NULL,
+    ImageFile ORDImage,
     CONSTRAINT Image_PK PRIMARY KEY (ID),
     CONSTRAINT FK_ProductImage
         FOREIGN KEY (ProductID)

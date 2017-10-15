@@ -13,6 +13,7 @@ BEGIN
     RETURN FALSE;
   END IF;
 END;
+---------------------------------
 
 CREATE OR REPLACE FUNCTION productExists(productID number)
 RETURN BOOLEAN
@@ -26,6 +27,7 @@ BEGIN
     RETURN TRUE;
   END IF;
 END;
+---------------------------------
 
 CREATE OR REPLACE PROCEDURE addImage(imageName varchar2, path varchar2, productID number)
 IS
@@ -58,6 +60,7 @@ BEGIN
     SELECT imagefile INTO obr1 FROM image WHERE ID = imageID;
     obr1.export(ctx, 'FILE', 'IMAGES', newImageName);
 END;
+---------------------------------
 
 CREATE OR REPLACE FUNCTION imageTypeExists(imageType varchar2)
 RETURN BOOLEAN
@@ -85,6 +88,7 @@ BEGIN
       RETURN FALSE;
     END IF;
 END;
+---------------------------------
 
 CREATE OR REPLACE PROCEDURE changeFormat(imageID number, format varchar2)
 IS
@@ -149,6 +153,47 @@ BEGIN
     RETURN TRUE;
   END IF;
 END;
+---------------------------------
+
+CREATE OR REPLACE PROCEDURE setImageSize(imageID number, height number, width number)
+IS
+  obj ORDImage;
+BEGIN
+  SELECT IMAGEFILE INTO obj FROM IMAGE
+  WHERE ID = imageID FOR UPDATE;
+  obj.process('fixedScale=' || width || ' ' || height);
+ 
+ -- Update 
+ UPDATE IMAGE SET IMAGEFILE = obj WHERE ID = imageID;
+ 
+ -- Roll back to keep original format of image:
+ COMMIT;
+END;
+---------------------------------
+
+create or replace 
+PROCEDURE showImageSize(imageID number)
+IS
+    image ORDSYS.ORDImage;
+    width number;
+    height number;
+BEGIN
+    SELECT IMAGEFILE INTO image FROM IMAGE WHERE ID = imageID;
+    width := image.getWidth();
+    height := image.getHeight();
+    DBMS_OUTPUT.PUT_LINE('wysokosc: ' || height);
+    DBMS_OUTPUT.PUT_LINE('szerokosc: ' || width);
+    COMMIT;
+    EXCEPTION
+    WHEN NO_DATA_FOUND THEN 
+      raise_application_error (-20001, 'Image of specified ID does not exist, please check image ID'); 
+END;
+---------------------------------
+
+
+
+--execute showImageSize(21);
+--execute setImageSize(21, 430, 430);
 
 --execute ADDIMAGE ('galaxys8.png', 'IMAGES', 1);
 --execute exportImage(21,'nowy.png');

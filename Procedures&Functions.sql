@@ -108,10 +108,8 @@ BEGIN
   WHERE ID = imageID FOR UPDATE;
   obj.process('fileFormat=' || format);
  
- -- Update 
  UPDATE IMAGE SET IMAGEFILE = obj WHERE ID = imageID;
  
- -- Roll back to keep original format of image:
  COMMIT;
  
  EXCEPTION
@@ -163,11 +161,11 @@ BEGIN
   WHERE ID = imageID FOR UPDATE;
   obj.process('fixedScale=' || width || ' ' || height);
  
- -- Update 
  UPDATE IMAGE SET IMAGEFILE = obj WHERE ID = imageID;
- 
- -- Roll back to keep original format of image:
  COMMIT;
+ EXCEPTION
+ WHEN VALUE_ERROR THEN
+    raise_application_error (-20001, 'Wrong type of passed parameters');
 END;
 ---------------------------------
 

@@ -153,7 +153,8 @@ BEGIN
 END;
 ---------------------------------
 
-CREATE OR REPLACE PROCEDURE setImageSize(imageID number, height number, width number)
+create or replace 
+PROCEDURE setImageSize(imageID number, height number, width number)
 IS
   obj ORDImage;
 BEGIN
@@ -161,11 +162,13 @@ BEGIN
   WHERE ID = imageID FOR UPDATE;
   obj.process('fixedScale=' || width || ' ' || height);
  
- UPDATE IMAGE SET IMAGEFILE = obj WHERE ID = imageID;
- COMMIT;
- EXCEPTION
- WHEN VALUE_ERROR THEN
+  UPDATE IMAGE SET IMAGEFILE = obj WHERE ID = imageID;
+  COMMIT;
+  EXCEPTION
+  WHEN VALUE_ERROR THEN
     raise_application_error (-20001, 'Wrong type of passed parameters');
+  WHEN NO_DATA_FOUND THEN 
+    raise_application_error (-20001, 'Image of specified ID does not exist, please check image ID');
 END;
 ---------------------------------
 

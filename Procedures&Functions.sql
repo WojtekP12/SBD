@@ -191,6 +191,28 @@ BEGIN
 END;
 ---------------------------------
 
+create or replace function GetVariableType
+(
+    p_object_name varchar2,
+    p_name varchar2
+) return varchar2 is
+    v_type_name varchar2(4000);
+begin
+    select reference.name into v_type_name
+    from user_identifiers declaration
+    join user_identifiers reference
+        on declaration.usage_id = reference.usage_context_id
+        and declaration.object_name = reference.object_name
+    where
+        declaration.object_name = p_object_name
+        and declaration.usage = 'DECLARATION'
+        and reference.usage = 'REFERENCE'
+        and declaration.name = p_name;
+
+    return v_type_name;
+end;
+/
+---------------------------------
 
 
 --execute showImageSize(21);

@@ -29,16 +29,22 @@ BEGIN
 END;
 ---------------------------------
 
-CREATE OR REPLACE PROCEDURE addImage(imageName varchar2, path varchar2, productID number)
+create or replace 
+PROCEDURE addImage(imageName varchar2, path varchar2, productID number)
 IS
   img ORDImage;
   ctx RAW(64) := NULL;
   row_id urowid;
-  no_file_exception EXCEPTION; 
+  no_file_exception EXCEPTION;
+  to_long_string_exception EXCEPTION;
 BEGIN
   IF fileExists(imageName, path)=FALSE THEN
     RAISE no_file_exception;
   END IF;
+  IF LENGTH(imageName)>200 THEN
+    RAISE to_long_string_exception;
+  END IF;
+  
   INSERT INTO IMAGE (PRODUCTID, NAME, TYPE, IMAGEFILE)
     VALUES(productID, imageName, 'png', ORDImage.init('FILE', path,imageName))
               RETURNING IMAGEFILE,rowid INTO img, row_id;
@@ -50,15 +56,23 @@ BEGIN
     raise_application_error (-20001, 'File dont exists, please check path parameter in procedure execution');
   WHEN NO_DATA_FOUND THEN 
     raise_application_error (-20001, 'Product of specified ID does not exist, please check product ID'); 
+  WHEN to_long_string_exception THEN
+    raise_application_error (-20001, 'image name is to long!');
 END;
+---------------------------------
 
-CREATE OR REPLACE PROCEDURE exportImage(imageID number, newImageName varchar)
+create or replace 
+PROCEDURE exportImage(imageID number, newImageName varchar)
 IS 
   obr1 ORDSYS.ORDIMAGE;
   ctx raw(64) :=null;
 BEGIN
-    SELECT imagefile INTO obr1 FROM image WHERE ID = imageID;
-    obr1.export(ctx, 'FILE', 'IMAGES', newImageName);
+  SELECT imagefile INTO obr1 FROM image WHERE ID = imageID;
+  obr1.export(ctx, 'FILE', 'IMAGES', newImageName);
+  COMMIT;
+  EXCEPTION
+  WHEN NO_DATA_FOUND THEN 
+    raise_application_error (-20001, 'Product of specified ID does not exist, please check product ID'); 
 END;
 ---------------------------------
 
@@ -157,6 +171,8 @@ create or replace
 PROCEDURE setImageSize(imageID number, height number, width number)
 IS
   obj ORDImage;
+  invalid exception;
+  PRAGMA EXCEPTION_INIT(invalid, -6502);
 BEGIN
   SELECT IMAGEFILE INTO obj FROM IMAGE
   WHERE ID = imageID FOR UPDATE;
@@ -165,10 +181,10 @@ BEGIN
   UPDATE IMAGE SET IMAGEFILE = obj WHERE ID = imageID;
   COMMIT;
   EXCEPTION
-  WHEN VALUE_ERROR THEN
-    raise_application_error (-20001, 'Wrong type of passed parameters');
   WHEN NO_DATA_FOUND THEN 
     raise_application_error (-20001, 'Image of specified ID does not exist, please check image ID');
+  WHEN others THEN
+    raise_application_error (-20001, 'Invalid number, please check passed parameters');
 END;
 ---------------------------------
 

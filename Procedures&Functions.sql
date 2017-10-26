@@ -230,6 +230,208 @@ end;
 /
 ---------------------------------
 
+create or replace procedure updateImageMetaData(imageId number)
+is
+  img ORDSYS.ORDImage;
+  metav XMLSequenceType;
+  meta_root VARCHAR2(40);
+  xmlORD XMLType;
+  xmlXMP XMLType;
+  xmlEXIF XMLType;
+  xmlIPTC XMLType;
+begin
+  select imagefile into img from IMAGE where ID = imageId;
+  metav := img.getMetadata('ALL');
+  
+  FOR i IN 1..metav.count() LOOP
+    meta_root := metav(i).getRootElement();
+    CASE meta_root
+      WHEN 'ordImageAttributes' THEN xmlORD := metav(i);
+      WHEN 'xmpMetadata' THEN xmlXMP := metav(i);
+      WHEN 'iptcMetadata' THEN xmlIPTC := metav(i);
+      WHEN 'exifMetadata' THEN xmlEXIF := metav(i);
+      ELSE NULL;
+    END CASE;
+  END LOOP;
+  
+  UPDATE image
+  SET metaORDImage = xmlORD,
+      metaEXIF = xmlEXIF,
+      metaIPTC = xmlIPTC,
+      metaXMP = xmlXMP
+  WHERE id = imageId;
+  commit;
+  
+  EXCEPTION
+  WHEN NO_DATA_FOUND THEN 
+    raise_application_error (-20001, 'Product of specified ID does not exist, please check product ID');
+END;
+---------------------------------
+
+create or replace 
+procedure updateImageMetaData(imageId number)
+is
+  img ORDSYS.ORDImage;
+  metav XMLSequenceType;
+  meta_root VARCHAR2(40);
+  xmlORD XMLType;
+  xmlXMP XMLType;
+  xmlEXIF XMLType;
+  xmlIPTC XMLType;
+begin
+  select imagefile into img from IMAGE where ID = imageId;
+  metav := img.getMetadata('ALL');
+  
+  FOR i IN 1..metav.count() LOOP
+    meta_root := metav(i).getRootElement();
+    CASE meta_root
+      WHEN 'ordImageAttributes' THEN xmlORD := metav(i);
+      WHEN 'xmpMetadata' THEN xmlXMP := metav(i);
+      WHEN 'iptcMetadata' THEN xmlIPTC := metav(i);
+      WHEN 'exifMetadata' THEN xmlEXIF := metav(i);
+      ELSE NULL;
+    END CASE;
+  END LOOP;
+  
+  xmlORD:=fixmetadataxml(xmlORD);
+  
+  UPDATE image
+  SET metaORDImage = xmlORD,
+      metaEXIF = xmlEXIF,
+      metaIPTC = xmlIPTC,
+      metaXMP = xmlXMP
+  WHERE id = imageId;
+  
+  commit;
+  
+  EXCEPTION
+  WHEN NO_DATA_FOUND THEN 
+    raise_application_error (-20001, 'Product of specified ID does not exist, please check product ID');
+END;
+---------------------------------
+
+
+create or replace function fixMetadataXML(imageXml XMLType)
+return XMLType
+is
+  x varchar2(30000);
+  NEW_XML xmltype;
+begin
+  x:=imageXml.getStringVal();
+  
+  x:=REPLACE(x, ' xmlns="http://xmlns.oracle.com/ord/meta/ordimage"');
+  
+  NEW_XML:=XMLTYPE.CREATEXML(x);
+
+  return NEW_XML;
+end;
+---------------------------------
+
+
+create or replace 
+procedure compareImages(image1Id number, image2Id number)
+is
+  image1OrdXML xmltype;
+  image2OrdXML xmltype;
+  image1Height varchar2(100);
+  image1Width varchar2(100);
+  image1Type varchar2(100);
+  image2Height varchar2(100);
+  image2Width varchar2(100);
+  image2Type varchar2(100);
+begin
+  
+  select metaordimage into image1OrdXML from image where id=image1Id;
+  select metaordimage into image2OrdXML from image where id=image2Id;
+  
+  SELECT ExtractValue(Value(xml),'*/height/text()') into image1Height
+  FROM TABLE(XMLSequence(Extract(image1OrdXML,'/ordImageAttributes'))) xml;
+  
+  SELECT ExtractValue(Value(xml),'*/width/text()') into image1Width
+  FROM TABLE(XMLSequence(Extract(image1OrdXML,'/ordImageAttributes'))) xml;
+  
+  SELECT ExtractValue(Value(xml),'*/fileFormat/text()') into image1Type
+  FROM TABLE(XMLSequence(Extract(image1OrdXML,'/ordImageAttributes'))) xml;
+  
+  SELECT ExtractValue(Value(xml),'*/height/text()') into image2Height
+  FROM TABLE(XMLSequence(Extract(image2OrdXML,'/ordImageAttributes'))) xml;
+  
+  SELECT ExtractValue(Value(xml),'*/width/text()') into image2Width
+  FROM TABLE(XMLSequence(Extract(image2OrdXML,'/ordImageAttributes'))) xml;
+  
+  SELECT ExtractValue(Value(xml),'*/fileFormat/text()') into image2Type
+  FROM TABLE(XMLSequence(Extract(image2OrdXML,'/ordImageAttributes'))) xml;
+
+  if image1Height = image2Height then
+    dbms_output.put_line('Obrazy maja te same wysokosci');
+  else 
+    dbms_output.put_line('Obrazy maja rozna wysokosc');
+  end if;
+  
+  if image1Width = image2Width then
+    dbms_output.put_line('Obrazy maja te same szerokosci');
+  else 
+    dbms_output.put_line('Obrazy maja rozna szerokosc');
+  end if;
+  
+  if image1Type = image2Type then
+    dbms_output.put_line('Obrazy maja ten sam format');
+  else 
+    dbms_output.put_line('Obrazy maja rozny format');
+  end if;
+  
+  if (image1Height = image2Height) and (image1Width = image2Width) and (image1Type = image2Type) then
+    dbms_output.put_line('Obrazy sa jednakowe pod wzgleden rozmiaru i typu');
+  else
+    dbms_output.put_line('Obrazy sa rozne pod wzgleden rozmiaru i typu');
+  end if;
+  
+  EXCEPTION
+  WHEN NO_DATA_FOUND THEN 
+    raise_application_error (-20001, 'Product of specified ID does not exist, please check product ID'); 
+  
+end;
+---------------------------------
+
+create or replace procedure findSimilarImage(imageId number)
+is
+  imageOrdXML xmltype;
+  imageHeight varchar2(100);
+  tempxml xmltype;
+  tempheight varchar2(100);
+  numberOfRows number;
+begin
+  numberOfRows := 0;
+  select metaordimage into imageOrdXML from image where id=imageId;
+  
+  SELECT ExtractValue(Value(xml),'*/height/text()') into imageHeight
+  FROM TABLE(XMLSequence(Extract(imageOrdXML,'/ordImageAttributes'))) xml;
+  
+  for i in (select * from image img where img.id <> imageId)
+  loop
+    tempxml:=i.metaordimage;
+    
+    SELECT ExtractValue(Value(xml),'*/height/text()') into tempheight
+    FROM TABLE(XMLSequence(Extract(tempxml,'/ordImageAttributes'))) xml;
+    
+    if tempheight = imageHeight then
+      --numberOfRows:=numberOfRows+1;
+      dbms_output.put_line('');
+      dbms_output.put_line('ID: ' || i.id);
+      dbms_output.put_line('Name: ' || i.name);
+      dbms_output.put_line('Type: ' || i.type);
+      dbms_output.put_line('');
+    end if;
+
+  end loop;
+      
+    --dbms_output.put_line(TO_CHAR(numberOfRows));
+  EXCEPTION
+  WHEN NO_DATA_FOUND THEN 
+    raise_application_error (-20001, 'image of specified ID does not exist, please check image ID');
+  
+end;
+---------------------------------
 
 --execute showImageSize(21);
 --execute setImageSize(21, 430, 430);

@@ -1,4 +1,5 @@
-CREATE OR REPLACE FUNCTION fileExists(fileName varchar2, filePath varchar2)
+create or replace 
+FUNCTION fileExists(fileName varchar2, filePath varchar2)
 RETURN BOOLEAN
 IS
 v_exists BOOLEAN;
@@ -15,7 +16,8 @@ BEGIN
 END;
 ---------------------------------
 
-CREATE OR REPLACE FUNCTION productExists(productID number)
+create or replace 
+FUNCTION productExists(productID number)
 RETURN BOOLEAN
 IS
   productCount number;
@@ -30,7 +32,7 @@ END;
 ---------------------------------
 
 create or replace 
-PROCEDURE addImage(imageName varchar2, path varchar2, productID number)
+PROCEDURE addImage(imageName varchar2, imageType varchar2, path varchar2, productID number)
 IS
   img ORDImage;
   ctx RAW(64) := NULL;
@@ -46,7 +48,7 @@ BEGIN
   END IF;
   
   INSERT INTO IMAGE (PRODUCTID, NAME, TYPE, IMAGEFILE)
-    VALUES(productID, imageName, 'png', ORDImage.init('FILE', path,imageName))
+    VALUES(productID, imageName, imageType, ORDImage.init('FILE', path,imageName))
               RETURNING IMAGEFILE,rowid INTO img, row_id;
   img.import(ctx);
   UPDATE IMAGE SET IMAGEFILE = img WHERE rowid = row_id;
@@ -76,7 +78,8 @@ BEGIN
 END;
 ---------------------------------
 
-CREATE OR REPLACE FUNCTION imageTypeExists(imageType varchar2)
+create or replace 
+FUNCTION imageTypeExists(imageType varchar2)
 RETURN BOOLEAN
 IS
   t varchar2(10);
@@ -104,7 +107,8 @@ BEGIN
 END;
 ---------------------------------
 
-CREATE OR REPLACE PROCEDURE changeFormat(imageID number, format varchar2)
+create or replace 
+PROCEDURE changeFormat(imageID number, format varchar2)
 IS
   obj ORDImage;
   no_image_exception EXCEPTION;
@@ -137,7 +141,8 @@ BEGIN
 END;
 ---------------------------------
 
-CREATE OR REPLACE PROCEDURE showImageFormat(imageID number)
+create or replace 
+PROCEDURE showImageFormat(imageID number)
 IS
     image ORDSYS.ORDImage;
     format varchar(4000);
@@ -207,7 +212,8 @@ BEGIN
 END;
 ---------------------------------
 
-create or replace function GetVariableType
+create or replace 
+function GetVariableType
 (
     p_object_name varchar2,
     p_name varchar2
@@ -227,10 +233,10 @@ begin
 
     return v_type_name;
 end;
-/
 ---------------------------------
 
-create or replace procedure updateImageMetaData(imageId number)
+create or replace 
+procedure updateImageMetaData(imageId number)
 is
   img ORDSYS.ORDImage;
   metav XMLSequenceType;
@@ -254,12 +260,15 @@ begin
     END CASE;
   END LOOP;
   
+  xmlORD:=fixmetadataxml(xmlORD);
+  
   UPDATE image
   SET metaORDImage = xmlORD,
       metaEXIF = xmlEXIF,
       metaIPTC = xmlIPTC,
       metaXMP = xmlXMP
   WHERE id = imageId;
+  
   commit;
   
   EXCEPTION
@@ -311,7 +320,8 @@ END;
 ---------------------------------
 
 
-create or replace function fixMetadataXML(imageXml XMLType)
+create or replace 
+function fixMetadataXML(imageXml XMLType)
 return XMLType
 is
   x varchar2(30000);
@@ -319,7 +329,7 @@ is
 begin
   x:=imageXml.getStringVal();
   
-  x:=REPLACE(x, ' xmlns="http://xmlns.oracle.com/ord/meta/ordimage"');
+  x:=REPLACE(x, 'xmlns="http://xmlns.oracle.com/ord/meta/ordimage"');
   
   NEW_XML:=XMLTYPE.CREATEXML(x);
 
@@ -393,18 +403,29 @@ begin
 end;
 ---------------------------------
 
-create or replace procedure findSimilarImage(imageId number)
+create or replace 
+procedure findSimilarImage(imageId number)
 is
   imageOrdXML xmltype;
   imageHeight varchar2(100);
+  imageWidth varchar2(100);
+  imageType varchar2(100);
   tempxml xmltype;
   tempheight varchar2(100);
+  tempwidth varchar2(100);
+  temptype varchar2(100);
   numberOfRows number;
 begin
   numberOfRows := 0;
   select metaordimage into imageOrdXML from image where id=imageId;
   
   SELECT ExtractValue(Value(xml),'*/height/text()') into imageHeight
+  FROM TABLE(XMLSequence(Extract(imageOrdXML,'/ordImageAttributes'))) xml;
+  
+  SELECT ExtractValue(Value(xml),'*/width/text()') into imageWidth
+  FROM TABLE(XMLSequence(Extract(imageOrdXML,'/ordImageAttributes'))) xml;
+  
+  SELECT ExtractValue(Value(xml),'*/fileFormat/text()') into imageType
   FROM TABLE(XMLSequence(Extract(imageOrdXML,'/ordImageAttributes'))) xml;
   
   for i in (select * from image img where img.id <> imageId)
@@ -414,12 +435,17 @@ begin
     SELECT ExtractValue(Value(xml),'*/height/text()') into tempheight
     FROM TABLE(XMLSequence(Extract(tempxml,'/ordImageAttributes'))) xml;
     
-    if tempheight = imageHeight then
+    SELECT ExtractValue(Value(xml),'*/width/text()') into tempwidth
+    FROM TABLE(XMLSequence(Extract(tempxml,'/ordImageAttributes'))) xml;
+    
+    SELECT ExtractValue(Value(xml),'*/fileFormat/text()') into temptype
+    FROM TABLE(XMLSequence(Extract(tempxml,'/ordImageAttributes'))) xml;
+    
+    if (tempheight = imageHeight) AND (tempwidth = imageWidth) AND (temptype = imageType) then
       --numberOfRows:=numberOfRows+1;
       dbms_output.put_line('');
       dbms_output.put_line('ID: ' || i.id);
       dbms_output.put_line('Name: ' || i.name);
-      dbms_output.put_line('Type: ' || i.type);
       dbms_output.put_line('');
     end if;
 
@@ -432,14 +458,4 @@ begin
   
 end;
 ---------------------------------
-
---execute showImageSize(21);
---execute setImageSize(21, 430, 430);
-
---execute ADDIMAGE ('galaxys8.png', 'IMAGES', 1);
---execute exportImage(21,'nowy.png');
---execute changeFormat(21,'JFIF');
-
---set serveroutput on;
---execute showImageFormat(123);
 

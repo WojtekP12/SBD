@@ -1,0 +1,102 @@
+<manufacturers>
+	<manufacturer id="P01">
+		<name>AFLOFARM</name>
+		<city_id>WR</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	 <manufacturer id="P02">
+		<name>AXELLUS</name>
+		<city_id>WA</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P03">
+		<name>BAYER</name>
+		<city_id>PO</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P04">
+		<name>BIOFARM</name>
+		<city_id>WA</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P05">
+		<name>BOIRON</name>
+		<city_id>RU</city_id> 
+		<country>ALBANIA</country>
+	</manufacturer>
+	<manufacturer id="P06">
+		<name>Bristol-Myers Squibb Polska Sp. z o.o</name>
+		<city_id>PA</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P07">
+		<name>GlaxoSmithKline Pharmaceuticals SA</name>
+		<city_id>WA</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P08">
+		<name>GLENMARK PHARMACEUTICALS S.R.O</name>
+		<city_id>RU</city_id> 
+		<country>ALBANIA</country>
+	</manufacturer>
+	<manufacturer id="P09">
+		<name>HASCO-LEK</name>
+		<city_id>WY</city_id> 
+		<country>CZECHY</country>
+	</manufacturer>
+	<manufacturer id="P10">
+		<name>IRIS COSMETIC</name>
+		<city_id>LY</city_id> 
+		<country>FRANCJA</country>
+	</manufacturer>
+	<manufacturer id="P11">
+		<name>Mcneil</name>
+		<city_id>FW</city_id> 
+		<country>STANY ZJEDNOCZONE</country>
+	</manufacturer>
+	<manufacturer id="P12">
+		<name>Novartis Consumer Health</name>
+		<city_id>PO</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P13">
+		<name>OLIMP LABORATORIES Sp. z o.o.</name>
+		<city_id>WA</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P14">
+		<name>PFIZER CORP</name>
+		<city_id>WA</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P15">
+		<name>PHARMASWISS</name>
+		<city_id>RZ</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P16">
+		<name>SANDOZ</name>
+		<city_id>WA</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P17">
+		<name>SANOFI AVENTIS</name>
+		<city_id>WR</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P18">
+		<name>Tarchomińskie Zakłady Farmaceutyczne "Polfa" Spółka Akcyjna</name>
+		<city_id>KU</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P19">
+		<name>Teva Pharmaceuticals</name>
+		<city_id>WA</city_id> 
+		<country>POLSKA</country>
+	</manufacturer>
+	<manufacturer id="P20">
+		<name>US Pharmacia Sp. z o.o.</name>
+		<city_id>FW</city_id> 
+		<country>STANY ZJEDNOCZONE</country>
+	</manufacturer>       
+</manufacturers>

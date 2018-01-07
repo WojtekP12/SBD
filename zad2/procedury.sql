@@ -24,17 +24,34 @@ exec sp_configure "remote proc trans", 0      -- 0 on, 1 off
 -- SINGLE_BLOB - parametr dla BULK, czytanie pliku jako pojedynczej linii (BLOC - jako ASCII)
 ---------------------------------------------------------------------------------------------------------
 
+drop procedure catchError
+GO
+CREATE PROCEDURE catchError
+AS
+BEGIN
+	SELECT  
+        ERROR_NUMBER() AS ErrorNumber  
+        ,ERROR_SEVERITY() AS ErrorSeverity  
+        ,ERROR_STATE() AS ErrorState  
+        ,ERROR_PROCEDURE() AS ErrorProcedure  
+        ,ERROR_LINE() AS ErrorLine  
+        ,ERROR_MESSAGE() AS ErrorMessage;
+END
 
-
-drop procedure exportDataToXML
+drop procedure insertXMLData
 GO
 CREATE PROCEDURE insertXMLData
 @table_name VARCHAR(32), @xmlPath VARCHAR(255)
 AS
 BEGIN
-	DECLARE @query VARCHAR(3000)
-	SET @query = 'INSERT INTO ' + @table_name + ' SELECT * FROM OPENROWSET (BULK ''' + @xmlPath + ''', SINGLE_BLOB) AS DATA'
-	exec (@query)
+	BEGIN TRY
+		DECLARE @query VARCHAR(3000)
+		SET @query = 'INSERT INTO ' + @table_name + ' SELECT * FROM OPENROWSET (BULK ''' + @xmlPath + ''', SINGLE_BLOB) AS DATA'
+		exec (@query)
+	END TRY
+	BEGIN CATCH
+		exec catchError
+	END CATCH
 END
 
 delete from Manufacturers
@@ -59,7 +76,12 @@ SET @query = 'SELECT
 				node.value(''country[1]'',''VARCHAR(30)'') AS ''country''
 				FROM Manufacturers
 				CROSS APPLY Manufacturers.manufacturers_data.nodes(''//manufacturer'') AS nodes(node)';
-EXEC (@query);
+	BEGIN TRY
+		EXEC (@query);
+	END TRY
+	BEGIN CATCH
+		exec catchError
+	END CATCH
 END
 
 exec getAllProducersInfo
@@ -75,7 +97,12 @@ SET @query = 'SELECT
 				node.value(''' + @node_name + '[1]'',''VARCHAR(30)'') AS ''Node info''
 				FROM Manufacturers
 				CROSS APPLY Manufacturers.manufacturers_data.nodes(''//manufacturer'') AS nodes(node)';
-EXEC (@query);
+	BEGIN TRY
+		EXEC (@query);
+	END TRY
+	BEGIN CATCH
+		exec catchError
+	END CATCH
 END
 
 exec getInfoFromProducerNode 'name'
@@ -92,7 +119,13 @@ AS
 BEGIN
 	DECLARE @query VARCHAR(3000)
 	SET @query = 'bcp "SELECT * FROM Apteka.dbo."' + @table_name + '" FOR XML AUTO, ELEMENTS" queryout "D:\table.xml" -c -T'
-	EXEC xp_cmdshell @query
+
+	BEGIN TRY
+		EXEC xp_cmdshell @query
+	END TRY
+	BEGIN CATCH
+		exec catchError
+	END CATCH
 END
 
 exec exportDataToXML 'Medicines'

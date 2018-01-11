@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<medicines>
+	<medicine id="1">
+		<name>Apap</name>
+		<type_id>tabletki powlekane</type_id>	
+		<action>przeciwbolowe</action>
+		<side_effects>niestrawnosc </side_effects>	
+		<recipe>nie</recipe>	         
+		<expiration_date>2018-10-31</expiration_date>
+		<price>7.50</price>     
+		<manufacturer>P07</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+   <medicine id="2">
+		<name>Ibuprom</name>
+		<type_id>tabletki powlekane</type_id>	
+		<action>przeciwbolowe</action>
+		<side_effects>bol glowy, bol brzucha</side_effects>
+		<recipe>nie</recipe>
+		<expiration_date>2018-05-22</expiration_date>
+		<price>6.20</price>
+		<manufacturer>P01</manufacturer>
+		<quantity>20</quantity>		
+	</medicine>
+	<medicine id="3" >
+		<name>Ketonal</name>
+		<type_id>zel</type_id>	
+		<action>przeciwbolowe</action>
+		<side_effects>niestrawnosc, nudnosci</side_effects>
+		<recipe>tak</recipe>
+		<expiration_date>2018-12-11</expiration_date>
+		<price>9.30</price>     
+		<manufacturer>P02</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+	<medicine id="4">
+		<name>Cholinex</name>
+		<type_id>pastylki twarde</type_id>	
+		<action>przeciwbolowe</action> 
+		<side_effects>wymioty, nudnosci</side_effects>
+		<recipe>nie</recipe>
+		<expiration_date>2018-09-14</expiration_date>
+		<price>11.40</price>
+		<manufacturer>P03</manufacturer>
+		<quantity>20</quantity>
+	</medicine>                       
+	<medicine id="5">
+		<name>Aspirin C</name>
+		<type_id>pastylki twarde</type_id>	
+		<action>przeciwgoraczkowe</action> 
+		<side_effects>zgaga</side_effects>	
+		<recipe>nie</recipe>
+		<expiration_date>2018-03-31</expiration_date>
+		<price>32.90</price>
+		<manufacturer>P04</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+	<medicine id="6">
+		<name>Herbapect</name>
+		<type_id>syrop</type_id>	
+		<action>wykrztusne</action> 
+		<side_effects>reakcje alergiczne</side_effects>	
+		<recipe>nie</recipe>
+		<expiration_date>2018-04-25</expiration_date>
+		<price>8.35</price>          
+		<manufacturer>P05</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+	<medicine id="7">
+		<name>Krople zoladkowe</name>
+		<type_id>krople</type_id>	
+		<action>przeciwbolowe</action> 
+		<side_effects>uszkodzenie nerek, bezsennosc</side_effects>
+		<recipe>nie</recipe>
+		<expiration_date>2018-01-01</expiration_date>
+		<price>2.35</price>
+		<manufacturer>P05</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+	<medicine id="8">
+		<name>Witaminy Centrum</name>
+		<type_id>tabletki powlekane</type_id>	
+		<action>wzmacniajace</action>
+		<side_effects>reakcje alergiczne</side_effects>
+		<recipe>nie</recipe>
+		<expiration_date>2018-10-01</expiration_date>
+		<price>21.15</price>           
+		<manufacturer>P07</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+	<medicine id="9">
+		<name>Cital</name>
+		<type_id>tabletki powlekane</type_id>	
+		<action>przeciwdepresyjne</action>
+		<side_effects>sennosc</side_effects>
+		<recipe>tak</recipe>
+		<expiration_date>2018-02-10</expiration_date>
+		<price>30.20</price>        
+		<manufacturer>P09</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+	<medicine id="10" >
+		<name>Forsen</name>
+		<type_id>kapsulki</type_id>	
+		<action>uspokajajace</action>
+		<side_effects>bol glowy</side_effects>
+		<recipe>nie</recipe>
+		<expiration_date>2018-12-01</expiration_date>
+		<price>13.75</price>          
+		<manufacturer>P11</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+	<medicine id="11">
+		<name>Fervex</name>
+		<type_id>proszek</type_id>	
+		<action>przeciwgoraczkowe</action>
+		<side_effects>sennosc</side_effects>
+		<recipe>nie</recipe>
+		<expiration_date>2018-09-13</expiration_date>
+		<price>9.90</price>        
+		<manufacturer>P15</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+	<medicine id="12">
+		<name>syrop prawoslazowy</name>
+		<type_id>syrop</type_id>	
+		<action>lagodzace</action>
+		<side_effects>Nieznane dzialania niepozadane</side_effects>
+		<recipe>nie</recipe>
+		<expiration_date>2018-05-25</expiration_date>
+		<price>3.49</price>        
+		<manufacturer>P16</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+	<medicine id="13">
+		<name>Altacet</name>
+		<type_id>zel</type_id>	
+		<action>przeciwobrzekowe</action>
+		<side_effects>Reakcje alergiczne</side_effects>
+		<recipe>nie</recipe>
+		<expiration_date>2018-03-12</expiration_date>
+		<price>13.90</price>         
+		<manufacturer>P17</manufacturer>
+		<quantity>20</quantity>
+	</medicine>
+</medicines>
